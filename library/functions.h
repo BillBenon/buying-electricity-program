@@ -5,9 +5,14 @@
 #include <time.h>
 //this file contains main different functions
 
+#include "residential.c"
 #include "non-residential.c"
 #include "telecomtowers.c"
+#include "Hotel.c"
+#include "healthFacilities.c"
 #include "watertreatment.c"
+#include "Broadcasters.c"
+#include "CommercialCenters.c"
 
 // structure to collect information of a Customer
 struct Customer{
@@ -15,6 +20,7 @@ struct Customer{
 	char name[40];
 	int categoryId;
 	int cashpowerNumber;
+	float tunits;
 };
 
 int search(int cashPowerNo) {
@@ -25,7 +31,7 @@ int search(int cashPowerNo) {
 	while(fread(&customer1, sizeof(customer1), 1, ptr)) {
 		if (customer1.cashpowerNumber == cashPowerNo) {
 			found = 1;
-			return customer1.categoryId;
+			return customer1.tunits;
 		}
 	}
 	if (!found) {
@@ -33,6 +39,20 @@ int search(int cashPowerNo) {
 		return 0;
 	}
 	
+	fclose(ptr);
+}
+
+float findTUnits(int cashPowerNo) {
+	struct Customer customer1;
+	FILE *ptr;
+	ptr=fopen("storage/customers.csv","r");
+	int found=0;
+	while(fread(&customer1, sizeof(customer1), 1, ptr)) {
+		if (customer1.cashpowerNumber == cashPowerNo) {
+			found = 1;
+			return customer1.categoryId;
+		}
+	}
 	fclose(ptr);
 }
 
@@ -118,6 +138,7 @@ int registerCashpower(){
 	int n;
     srand(time(0));
 	newCustomer.cashpowerNumber = (rand() % (99999999999 - 10000000000 + 1)) + 10000000000;
+	newCustomer.tunits = 0;
 	printf("\n\t\t\tYour cashpower number is: %d", newCustomer.cashpowerNumber);
 	if (fwrite(&newCustomer, sizeof(struct Customer), 1, ptr)) {
 		printf("\n\n\t\t\tWELCOME! you are now registered!");
@@ -139,5 +160,33 @@ int BuyElectricity(){
 	if (customerCategoryId == 0) {
 		printf("\n\n\t\t\tYou're not registered! First register to continue");
 		registerCashpower();
+	}
+	printf("\n\n\t\t\tEnter the amount of money you want to buy units for: ");
+	float money;
+	scanf("%f", &money);
+	switch (customerCategoryId) {
+		case 1:
+			Residential(money, findTUnits(cashPowerNo));
+			break;
+		case 2:
+			nonResidential(money, findTUnits(cashPowerNo));
+			break;
+		case 3:
+			telecom(money);
+			break;
+		case 4:
+			watertreatment(money);
+			break;
+		case 5:
+			Hotels(money);
+			break;
+		case 6:
+			HealthFacilities(money);
+			break;
+		case 7:
+			getBroadcaster(money);
+			break;
+		default:
+			getCommercialCenters(money);
 	}
 }
