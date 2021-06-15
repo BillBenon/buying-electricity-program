@@ -4,13 +4,12 @@
 #include<string.h>
 #include <time.h>
 //this file contains main different functions
-
 // structure to collect information of a Customer
 struct Customer{
 	int id;
 	char name[40];
-	char category[40];
-	char cashpowerNumber[40];
+	int categoryId;
+	int cashpowerNumber;
 };
 
 // function to exit the application
@@ -35,6 +34,7 @@ int registerCashpower(){
 	printf("\t\t\tEnter your Name:");
 	scanf("%s",newCustomer.name);
 	
+	int option;
 	categoryChoosing:
 	printf("\t\t\t|         CATEGORIES AVAILABLE                                 |\n");
 	printf("\t\t\t===============================================================\n");
@@ -48,20 +48,56 @@ int registerCashpower(){
 	printf("\t\t\t| 8 = commercial data centers                                  |\n");
 	printf("\t\t\t===============================================================\n");
 	printf("\t\t\tChoose your category:");
-	scanf("%s",newCustomer.category);
-	int customNo = atoi(newCustomer.category);
-	
-	if (customNo != 1 && customNo != 2 && customNo != 3 && customNo != 4 && customNo != 5 && customNo != 6 && customNo != 7 && customNo != 8) {
-		printf("Please choose a correct option!\n");
-		goto categoryChoosing;
-	}
-	
+	scanf("%d",&option);
+	do{
+		switch(option){
+			case 1:
+				newCustomer.categoryId = 1;
+				printf("%d", newCustomer.categoryId);
+				option=9;
+				break;
+			case 2:
+				newCustomer.categoryId = 2;
+				option=9;
+				break;
+			case 3:
+				newCustomer.categoryId = 3;
+				option=9;
+				break;
+			case 4:
+				newCustomer.categoryId = 4;
+				option=9;
+				break;
+			case 5:
+				newCustomer.categoryId = 5;
+				option=9;
+				break;
+			case 6:
+				newCustomer.categoryId = 6;
+				option=9;
+				break;
+			case 7:
+				newCustomer.categoryId = 7;
+				option=9;
+				break;
+			case 8:
+				newCustomer.categoryId = 8;
+				option=9;
+				break;
+			default:
+				printf("\n\n\t\t\tSorry! Option not found!");
+				printf("\n\n\t\tWant to continue? Enter onother option:");
+				scanf("%d",&option);
+		}
+	}while(option < 9);
+	printf("\n");
+//	randomly generate cash power number
 	int n;
-    srand(time(NULL));
-    for(n=0; n<3; n++)  *newCustomer.cashpowerNumber = printf("%04d", rand()%10000);
-	
-	if(fprintf(ptr,"%d,%s,%s,%s\n",userID,newCustomer.name,newCustomer.category,newCustomer.cashpowerNumber)) {
+    srand(time(0));
+	newCustomer.cashpowerNumber = (rand() % (99999999999 - 10000000000 + 1)) + 10000000000;
+	if(fprintf(ptr,"%d,%s,%d,%d, 0\n",userID,newCustomer.name,newCustomer.categoryId,newCustomer.cashpowerNumber)) {
 		printf("\n\n\t\t\t WELCOME! you are now registered!");
+		exit(-1);
 	}
 	fclose(ptr);
 }

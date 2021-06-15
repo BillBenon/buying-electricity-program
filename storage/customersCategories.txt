@@ -1,0 +1,19 @@
+1	residential		0	15
+
+2	residential		16	50
+
+3	residential		51	all
+
+4	non-residential	0	100
+
+5	non-residential	101	all
+
+6	telecom-towers	all	all
+
+7	water-treatment-pumping	all	all
+
+8	hotels	all	all
+
+9	health-facilities	all	all
+
+10	broadcasters	all	all

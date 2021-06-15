@@ -25,25 +25,24 @@ int main(){
 		case 1:
 			//registerCashpower() is defined in functions.h
 			registerCashpower();
-			option=4;
+			option=1;
 		break;
 		case 2:
 			//BuyElectricity() is defined in functions.h
 			BuyElectricity();
-			printf("\n\n\t\t\tWant to continue? Enter onother option:");
-			scanf("%d",&option);
+			option=2;
 		break;
 		case 3:
 			//exitProgram() is defined in functions.h
 			exitProgram();
-			option=4;
+			option=3;
 		break;
 		default:
 			printf("\n\n\t\t\tSorry! Option not found!");
 			printf("\n\n\t\tWant to continue? Enter onother option:");
 			scanf("%d",&option);
 				
-	}
+		}
 	}while(option < 4);
 	printf("\n");
 	return 0;
