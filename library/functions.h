@@ -4,6 +4,11 @@
 #include<string.h>
 #include <time.h>
 //this file contains main different functions
+
+#include "non-residential.c"
+#include "telecomtowers.c"
+#include "watertreatment.c"
+
 // structure to collect information of a Customer
 struct Customer{
 	int id;
@@ -11,6 +16,25 @@ struct Customer{
 	int categoryId;
 	int cashpowerNumber;
 };
+
+int search(int cashPowerNo) {
+	struct Customer customer1;
+	FILE *ptr;
+	ptr=fopen("storage/customers.csv","r");
+	int found=0;
+	while(fread(&customer1, sizeof(customer1), 1, ptr)) {
+		if (customer1.cashpowerNumber == cashPowerNo) {
+			found = 1;
+			return customer1.categoryId;
+		}
+	}
+	if (!found) {
+//		char notFound[40] = "Cashpower number not found!";
+		return 0;
+	}
+	
+	fclose(ptr);
+}
 
 // function to exit the application
 int exitProgram(){
@@ -35,7 +59,6 @@ int registerCashpower(){
 	scanf("%s",newCustomer.name);
 	
 	int option;
-	categoryChoosing:
 	printf("\t\t\t|         CATEGORIES AVAILABLE                                 |\n");
 	printf("\t\t\t===============================================================\n");
 	printf("\t\t\t| 1 = residential                                              |\n");
@@ -96,15 +119,25 @@ int registerCashpower(){
     srand(time(0));
 	newCustomer.cashpowerNumber = (rand() % (99999999999 - 10000000000 + 1)) + 10000000000;
 	printf("\n\t\t\tYour cashpower number is: %d", newCustomer.cashpowerNumber);
-	if(fprintf(ptr,"%d,%s,%d,%d, 0\n",userID,newCustomer.name,newCustomer.categoryId,newCustomer.cashpowerNumber)) {
-		printf("\n\n\t\t\t WELCOME! you are now registered!");
+	if (fwrite(&newCustomer, sizeof(struct Customer), 1, ptr)) {
+		printf("\n\n\t\t\tWELCOME! you are now registered!");
 		exit(-1);
 	}
+//	if(fprintf(ptr,"%d,%s,%d,%d, 0\n",userID,newCustomer.name,newCustomer.categoryId,newCustomer.cashpowerNumber)) {
+//		
+//	}
 	fclose(ptr);
 }
 
 
 //function to buy electricity
 int BuyElectricity(){
-	printf("Enter the your cashpower number: ");
+	int cashPowerNo;
+	printf("\t\t\tEnter the your cashpower number: ");
+	scanf("%d", &cashPowerNo);
+	int customerCategoryId = search(cashPowerNo);
+	if (customerCategoryId == 0) {
+		printf("\n\n\t\t\tYou're not registered! First register to continue");
+		registerCashpower();
+	}
 }

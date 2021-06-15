@@ -2,6 +2,6 @@
 #include <stdlib.h>
 
 float watertreatment(float money,float tunits){
-        float tunits = money/126;
+        tunits = money/126;
     return tunits;
 }
