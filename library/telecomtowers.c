@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-float telecom(float money,float tunits){
-        tunits = money/201;
-    return tunits;
+struct boughtElectricityInfo{
+    float tunits;
+};
+
+struct boughtElectricityInfo telecom(float money){
+        float tunits = money/201;
+        struct boughtElectricityInfo finalBuyingInfo;
+        finalBuyingInfo.tunits = tunits;
+        return finalBuyingInfo;
 }
