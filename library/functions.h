@@ -95,6 +95,7 @@ int registerCashpower(){
 	int n;
     srand(time(0));
 	newCustomer.cashpowerNumber = (rand() % (99999999999 - 10000000000 + 1)) + 10000000000;
+	printf("\n\t\t\tYour cashpower number is: %d", newCustomer.cashpowerNumber);
 	if(fprintf(ptr,"%d,%s,%d,%d, 0\n",userID,newCustomer.name,newCustomer.categoryId,newCustomer.cashpowerNumber)) {
 		printf("\n\n\t\t\t WELCOME! you are now registered!");
 		exit(-1);
@@ -105,5 +106,5 @@ int registerCashpower(){
 
 //function to buy electricity
 int BuyElectricity(){
-	
+	printf("Enter the your cashpower number: ");
 }
