@@ -5,14 +5,14 @@
 #include <time.h>
 //this file contains main different functions
 
-#include "residential.c"
-#include "non-residential.c"
-#include "telecomtowers.c"
-#include "Hotel.c"
-#include "healthFacilities.c"
-#include "watertreatment.c"
-#include "Broadcasters.c"
-#include "CommercialCenters.c"
+#include "residential.h"
+#include "non-residential.h"
+#include "telecomtowers.h"
+#include "Hotel.h"
+#include "healthFacilities.h"
+#include "watertreatment.h"
+#include "Broadcasters.h"
+#include "CommercialCenters.h"
 
 // structure to collect information of a Customer
 struct Customer{
@@ -23,7 +23,12 @@ struct Customer{
 	float tunits;
 };
 
-int search(int cashPowerNo) {
+struct boughtElectricity {
+	float tunits;
+	float boughtUnits;
+};
+
+int findTUnits(int cashPowerNo) {
 	struct Customer customer1;
 	FILE *ptr;
 	ptr=fopen("storage/customers.csv","r");
@@ -35,14 +40,37 @@ int search(int cashPowerNo) {
 		}
 	}
 	if (!found) {
-//		char notFound[40] = "Cashpower number not found!";
 		return 0;
 	}
 	
 	fclose(ptr);
 }
 
-float findTUnits(int cashPowerNo) {
+char* searchUser(char *cashPowerNo) {
+	printf("Starting....");
+	struct Customer *customer1;
+	FILE *ptr;
+	ptr=fopen("storage/customers.csv","r");
+	int found=0;
+//	assuming that the number of characters for a name is 80
+	char *name = (char*)calloc(80, sizeof(char));
+	while(fread(&customer1, sizeof(customer1), 1, ptr)) {
+		if (strcmp(customer1->name, cashPowerNo) == 0) {
+			printf("%s", *(customer1->name));
+			found = 1;
+			name = customer1->name;
+			return name;
+		}
+	}
+	if (!found) {
+		name = "Cashpower number not found!";
+		return name;
+	}
+	
+	fclose(ptr);
+}
+
+int searchCashPowerCategory(int cashPowerNo) {
 	struct Customer customer1;
 	FILE *ptr;
 	ptr=fopen("storage/customers.csv","r");
@@ -53,7 +81,51 @@ float findTUnits(int cashPowerNo) {
 			return customer1.categoryId;
 		}
 	}
+	if (!found) {
+		printf("Not found!");
+	}
 	fclose(ptr);
+}
+
+float UpdateTUnits(int cashPowerNo, float tunits) {
+	struct Customer customer1;
+	FILE *ptr, *ptr1;
+	int found = 0;
+	ptr=fopen("storage/customers.csv","r");
+	ptr1 = fopen("storage/temp.txt", "w");
+	while(fread(&customer1, sizeof(customer1), 1, ptr)) {
+		if (customer1.cashpowerNumber == cashPowerNo) {
+			found = 1;
+			customer1.tunits += tunits;
+		}
+		fwrite(&customer1, sizeof(customer1), 1, ptr1);
+	}
+	fclose(ptr);
+	fclose(ptr1);
+	if (found) {
+		ptr1 = fopen("storage/temp.txt", "r");
+		ptr=fopen("storage/customers.csv","w");
+		
+		while(fread(&customer1, sizeof(customer1), 1, ptr1)) {
+			fwrite(&customer1, sizeof(customer1), 1, ptr);
+		}
+		
+		fclose(ptr);
+		fclose(ptr1);
+	}
+}
+
+int printElecticityDetails(char* name, float units, int cashpower, float money) {
+	printf("\t\t\tProcessing.....\n");
+	printf("\n");
+	printf("\t\t\tE-STEP Electicity %s\n");
+	printf("\t\t\tCustomer name: %s\n",name);
+	printf("\t\t\t electricity paid: %.2fKWH\n",units);
+	printf("\t\t\t cashpower number: %d\n",cashpower);
+	printf("\t\t\t total amount cost: %dFrw\n",money);
+	printf("\t\t\t transaction done on %s\n",__DATE__);
+	printf("\t\t\t-----------------------------------------");
+	printf("\n\n");
 }
 
 // function to exit the application
@@ -129,7 +201,7 @@ int registerCashpower(){
 				break;
 			default:
 				printf("\n\n\t\t\tSorry! Option not found!");
-				printf("\n\n\t\tWant to continue? Enter onother option:");
+				printf("\n\n\t\t\tWant to continue? Enter onother option:");
 				scanf("%d",&option);
 		}
 	}while(option < 9);
@@ -156,37 +228,71 @@ int BuyElectricity(){
 	int cashPowerNo;
 	printf("\t\t\tEnter the your cashpower number: ");
 	scanf("%d", &cashPowerNo);
-	int customerCategoryId = search(cashPowerNo);
+	searchCashPowerCategory(cashPowerNo);
+	int customerCategoryId =  searchCashPowerCategory(cashPowerNo);
 	if (customerCategoryId == 0) {
 		printf("\n\n\t\t\tYou're not registered! First register to continue");
 		registerCashpower();
 	}
-	printf("\n\n\t\t\tEnter the amount of money you want to buy units for: ");
 	float money;
+	printf("\n\n\t\t\tEnter the amount of money you want to buy units for: ");
 	scanf("%f", &money);
+	char cashPowerNoStr[11];
+	itoa(cashPowerNo, cashPowerNoStr, 10);
+	char* customerName;
+	searchUser(cashPowerNoStr);
+	customerName = searchUser(cashPowerNoStr);
+	
+	struct boughtElectricity buyingInfo;
 	switch (customerCategoryId) {
-		case 1:
-			Residential(money, findTUnits(cashPowerNo));
+		case 1:{
+			buyingInfo.tunits = Residential(money, findTUnits(cashPowerNo)).tunits;
+			buyingInfo.boughtUnits = Residential(money, findTUnits(cashPowerNo)).boughtUnits;
+			UpdateTUnits(cashPowerNo, buyingInfo.boughtUnits);
+			printElecticityDetails(customerName, buyingInfo.boughtUnits, cashPowerNo, money);
 			break;
-		case 2:
-			nonResidential(money, findTUnits(cashPowerNo));
+		}
+		case 2:{
+			buyingInfo.tunits = nonResidential(money, findTUnits(cashPowerNo)).tunits;
+			buyingInfo.boughtUnits = nonResidential(money, findTUnits(cashPowerNo)).boughtUnits;
+			UpdateTUnits(cashPowerNo, buyingInfo.boughtUnits);
+			printElecticityDetails(customerName, buyingInfo.boughtUnits, cashPowerNo, money);
 			break;
-		case 3:
-			telecom(money);
+		}
+		case 3:{
+			float boughtUnits = telecom(money);
+			UpdateTUnits(cashPowerNo, boughtUnits);
+			printElecticityDetails(customerName, boughtUnits, cashPowerNo, money);
 			break;
-		case 4:
-			watertreatment(money);
+		}
+		case 4:{
+			float boughtUnits = watertreatment(money);
+			UpdateTUnits(cashPowerNo, boughtUnits);
+			printElecticityDetails(customerName, boughtUnits, cashPowerNo, money);
 			break;
-		case 5:
-			Hotels(money);
+		}
+		case 5:{
+			float boughtUnits = Hotels(money);
+			UpdateTUnits(cashPowerNo, boughtUnits);
+			printElecticityDetails(customerName, boughtUnits, cashPowerNo, money);
 			break;
-		case 6:
-			HealthFacilities(money);
+		}
+		case 6:{
+			float boughtUnits = HealthFacilities(money);
+			UpdateTUnits(cashPowerNo, boughtUnits);
+			printElecticityDetails(customerName, boughtUnits, cashPowerNo, money);
 			break;
-		case 7:
-			getBroadcaster(money);
+		}
+		case 7:{
+			float boughtUnits = getBroadcaster(money);
+			UpdateTUnits(cashPowerNo, boughtUnits);
+			printElecticityDetails(customerName, boughtUnits, cashPowerNo, money);
 			break;
-		default:
-			getCommercialCenters(money);
+		}
+		default:{
+			float boughtUnits = getCommercialCenters(money);
+			UpdateTUnits(cashPowerNo, boughtUnits);
+			printElecticityDetails(customerName, boughtUnits, cashPowerNo, money);
+		}
 	}
 }

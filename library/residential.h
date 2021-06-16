@@ -63,10 +63,10 @@ electricityInfo Residential(float money,float tunits){
 	
 }
 
-int main(){
-	electricityInfo units =Residential(1500 ,17);
-	printf("Units are %f\n",units.boughtUnits);
-}
+// int main(){
+// 	electricityInfo units =Residential(1500 ,17);
+// 	printf("Units are %f\n",units.boughtUnits);
+// }
 	
 	
 	

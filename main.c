@@ -39,7 +39,7 @@ int main(){
 		break;
 		default:
 			printf("\n\n\t\t\tSorry! Option not found!");
-			printf("\n\n\t\tWant to continue? Enter onother option:");
+			printf("\n\n\t\t\tWant to continue? Enter onother option:");
 			scanf("%d",&option);
 				
 		}

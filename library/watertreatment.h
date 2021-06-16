@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-float telecom(float money){
+float watertreatment(float money){
 	float tunits;
-    tunits = money/201;
+    tunits = money/126;
     return tunits;
 }
