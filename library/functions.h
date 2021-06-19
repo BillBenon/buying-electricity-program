@@ -15,12 +15,14 @@
 #include "CommercialCenters.h"
 
 int cashPowerNo;
-char* customerName;
+char* customerFname;
+char* customerLname;
 
 // structure to collect information of a Customer
 struct Customer{
 	int id;
-	char name[40];
+	char fname[40];
+	char lname[40];
 	int categoryId;
 	int cashpowerNumber;
 	float tunits;
@@ -54,14 +56,13 @@ char* searchUser() {
 	FILE *ptr;
 	ptr=fopen("storage/customers.csv","r");
 	int found=0;
-//	assuming that the number of characters for a name is 80
-	char *name = (char*)calloc(80, sizeof(char));
 	while(fread(&customer1, sizeof(customer1), 1, ptr)) {
 		if (customer1.cashpowerNumber == cashPowerNo) {
 			found = 1;
-			customerName = customer1.name;
-			printf("\t\t\tCustomer name: %s\n", customerName);
-			return customerName;
+			customerFname = customer1.fname;
+			customerLname = customer1.lname;
+			printf("\t\t\tCustomer name: %s %s\n", customerFname, customerLname);
+			return customerFname;
 		}
 	}
 	
@@ -145,8 +146,10 @@ int registerCashpower(){
 	system("color 07");
 	printf("\n\t\t\t REGISTER NEW CASHPOWER");
 	printf("\n\t\t\t--------------------------\n\n");
-	printf("\t\t\tEnter your Name:");
-	scanf("%s",newCustomer.name);
+	printf("\t\t\tEnter your Firstname:");
+	scanf("%s",newCustomer.fname);
+	printf("\t\t\tEnter your Lastname:");
+	scanf("%s",newCustomer.lname);
 	
 	int option;
 	printf("\t\t\t|         CATEGORIES AVAILABLE                                 |\n");
