@@ -117,7 +117,11 @@ float UpdateTUnits(int cashPowerNo, float tunits) {
 int printElecticityDetails(float units, int cashpower, float money) {
 	printf("\t\t\tProcessing.....\n");
 	printf("\n");
-	printf("\t\t\tE-STEP Electicity\n");
+	printf("\t\t\tE-STEP Electicity: \t");
+	int n;
+    srand(time(NULL));
+    for(n=0; n<4; n++)  printf("%05d", rand()%10000);
+    printf("\n");
 	printf("\t\t\telectricity paid: %.2fKWH\n",units);
 	printf("\t\t\tcashpower number: %d\n",cashpower);
 	printf("\t\t\ttotal amount cost: %.2fFrw\n",money);
